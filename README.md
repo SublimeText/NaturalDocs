@@ -140,12 +140,14 @@ function testThis($one, $two, $three) {}
 Code:
 
 ```php
+<?php
 function testThis($one='', $two=true, $three=array()) {}
 ```
 
 Put cursor on or before the line and pressing `Super-N` will result in:
 
 ```php
+<?php
 /**
  * Function: testThis
  *
