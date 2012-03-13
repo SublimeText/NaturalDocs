@@ -1,4 +1,4 @@
-NaturalDocs is a [Sublime Text 2][sublime] package which makes writing [NaturalDocs](http://www.naturaldocs.org) easy. Based on [DocBlockr][docblockr] by [Nick Fisher](https://github.com/spadgos), influenced by [Germán M. Bravo](https://github.com/Kronuz)'s [SublimeLinter][sublimelinter].
+NaturalDocs is a [Sublime Text 2](http://www.sublimetext.com/) package which makes writing [NaturalDocs](http://www.naturaldocs.org) easy. Based on [DocBlockr](https://github.com/spadgos/sublime-jsdocs) by [Nick Fisher](https://github.com/spadgos), influenced by [Germán M. Bravo](https://github.com/Kronuz)'s [SublimeLinter](https://github.com/Kronuz/SublimeLinter).
 
 # Languages #
 
