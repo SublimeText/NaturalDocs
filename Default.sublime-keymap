@@ -1,0 +1,137 @@
+[
+    { "keys": ["super+n"], "command": "natural_docs_insert_block" },
+    { "keys": ["super+d"], "command": "natural_docs_decorate" },
+    { "keys": ["enter"], "command": "natural_docs", "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\*{2}$", "match_all": true }
+        ]
+    },
+    { "keys": ["enter"], "command": "natural_docs", "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*=begin ND$", "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "source.perl", "match_all": true}
+        ]
+    },
+    { "keys": ["enter"], "command": "natural_docs", "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\"\"\"$", "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "source.python", "match_all": true}
+        ]
+    },
+    { "keys": ["tab"], "command": "natural_docs", "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\*{2}$", "match_all": true }
+        ]
+    },
+    { "keys": ["shift+enter"], "command": "natural_docs", "args": {"inline": true}, "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\*{2}$", "match_all": true }
+        ]
+    },
+    { "keys": ["enter"], "command": "insert_snippet", "args": {"contents": "\n${TM_CURRENT_LINE/^\\s*(\\*\\s*).*$/$1/}"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "comment.block.documentation", "match_all": true},
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\*", "match_all": true }
+        ]
+    },
+    { "keys": ["enter"], "command": "insert_snippet", "args": {"contents": "\n${TM_CURRENT_LINE/^\\s*(\\/\\/\\s*).*$/$1/}"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "setting.natural_docs_extend_double_slash", "operator": "equal", "operand": true, "match_all": true},
+            { "key": "selector", "operator": "equal", "operand": "comment.line.double-slash", "match_all": true},
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\/", "match_all": true}
+        ]
+    },
+    { "keys": ["enter"], "command": "insert_snippet", "args": {"contents": "\n${TM_CURRENT_LINE/^\\s*(#\\s*).*$/$1/}"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": " comment.line.number-sign", "match_all": true},
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*#", "match_all": true}
+        ]
+    },
+    { "keys": ["keypad_enter"], "command": "natural_docs", "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\*{2}$", "match_all": true }
+        ]
+    },
+    { "keys": ["shift+keypad_enter"], "command": "natural_docs", "args": {"inline": true}, "context" :
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\*{2}$", "match_all": true }
+        ]
+    },
+    { "keys": ["keypad_enter"], "command": "insert_snippet", "args": {"contents": "\n${TM_CURRENT_LINE/^\\s*(\\*\\s*).*$/$1/}"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true },
+            { "key": "selector", "operator": "equal", "operand": "comment.block.documentation", "match_all": true},
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\*", "match_all": true }
+        ]
+    },
+    { "keys": ["keypad_enter"], "command": "insert_snippet", "args": {"contents": "\n${TM_CURRENT_LINE/^\\s*(\\/\\/\\s*).*$/$1/}"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "setting.natural_docs_extend_double_slash", "operator": "equal", "operand": true, "match_all": true},
+            { "key": "selector", "operator": "equal", "operand": "comment.line.double-slash", "match_all": true},
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\/", "match_all": true}
+        ]
+    },
+    { "keys": ["tab"], "command": "natural_docs_indent", "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\*\\s*$", "match_all": true },
+            { "key": "has_next_field", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "comment.block.documentation", "match_all": true }
+        ]
+    },
+    { "keys": ["ctrl+enter"], "command": "natural_docs_decorate", "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "comment.line.double-slash"}
+        ]
+    },
+    { "keys": ["ctrl+j"], "command": "natural_docs_join", "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "comment.block.documentation" }
+        ]
+    },
+
+    // non-standard documentation
+    { "keys": ["enter"], "command": "insert_snippet", "args": {"contents": "\n * ${1}\n *\/"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\/\\*[^\\*\/]*$", "match_all": true }
+        ]
+    },
+    { "keys": ["enter"], "command": "insert_snippet", "args": {"contents": "\n${TM_CURRENT_LINE/^\\s*(\\*\\s*).*$/$1/}"}, "context":
+        [
+            { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "comment.block", "match_all": true},
+            { "key": "auto_complete_visible", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "^\\s*\\*", "match_all": true }
+        ]
+    }
+]

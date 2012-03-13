@@ -1,0 +1,10 @@
+[
+  {
+    "caption": "NaturalDocs: Add Comment",
+    "command": "natural_docs"
+  },
+  {
+    "caption": "NaturalDocs: Decorate line comment",
+    "command": "natural_docs_decorate"
+  }
+]
