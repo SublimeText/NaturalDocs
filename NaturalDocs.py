@@ -240,9 +240,26 @@ class NaturalDocsJoinCommand(sublime_plugin.TextCommand):
 
 
 class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
+
     def run(self, edit):
         v = self.view
-        re_whitespace = re.compile("^(\\s*)//")
+
+        punctuation = ''
+        re_whitespace = ''
+        punctuation_end = ''
+        if v.scope_name(v.sel()[0].a).find('comment.line.number-sign') > 0:
+            punctuation = '#'
+            punctuation_end = '#'
+            re_whitespace = re.compile("^(\\s*)#")
+        elif v.scope_name(v.sel()[0].a).find('double-slash') > 0:
+            punctuation = '/'
+            punctuation_end = '//'
+            re_whitespace = re.compile("^(\\s*)//")
+        else:
+            print 'NaturalDocs: Cannot decorate this line.'
+            return
+
+        endLength = len(punctuation_end) + 1
         v.run_command('expand_selection', {'to': 'scope'})
         for sel in v.sel():
             maxLength = 0
@@ -253,12 +270,12 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
 
             lineLength = maxLength - leadingWS
             leadingWS = " " * leadingWS
-            v.insert(edit, sel.end(), leadingWS + "/" * (lineLength + 3) + "\n")
+            v.insert(edit, sel.end(), leadingWS + punctuation * (lineLength + endLength) + "\n")
 
             for lineRegion in reversed(lines):
                 line = v.substr(lineRegion)
                 rPadding = 1 + (maxLength - lineRegion.size())
-                v.replace(edit, lineRegion, leadingWS + line + (" " * rPadding) + "//")
+                v.replace(edit, lineRegion, leadingWS + line + (" " * rPadding) + punctuation_end)
                 # break
 
-            v.insert(edit, sel.begin(), "/" * (lineLength + 3) + "\n")
+            v.insert(edit, sel.begin(), punctuation * (lineLength + endLength) + "\n")
