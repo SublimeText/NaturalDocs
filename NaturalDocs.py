@@ -149,7 +149,7 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
                     write(v, prefix.join(out) + end)
 
             else:
-                write(v, "$0\n" + end)
+                write(v, "$0" + end)
 
 
 class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
