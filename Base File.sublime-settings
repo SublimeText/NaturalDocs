@@ -5,10 +5,10 @@
   // stay aligned.
   "natural_docs_deep_indent": true,
 
-  // If true, then pressing enter while in a double-slash comment
-  // (like this one) will automatically add two slashes to the next line
-  // as well
-  "natural_docs_extend_double_slash": true,
+  // If true, then pressing enter while in a double-slash or number-sign comment
+  // (like this one) will automatically add the current comment punctuation to the
+  // next line as well
+  "natural_docs_continue_comments": true,
 
   // the number of spaces to add after the leading *
   "natural_docs_indentation_spaces": 1,
