@@ -77,7 +77,7 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
         else:
             line = read_line(v, point)
 
-            if parser.settings['insert_after_def']:
+            if 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
                 # move cursor below current line
                 v.run_command("move", {"by": "lines", "forward": True})
                 v.run_command("move_to", {"to": "bol", "extend": False})
@@ -86,11 +86,11 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
 
         if re.search(re.escape(parser.settings['block_start']), line) is None:
             start = parser.settings['block_start']
-            if parser.settings['space_after_start']:
+            if 'space_after_start' in parser.settings and parser.settings['space_after_start']:
                 start += first
                 first = prefix
             write(v, start)
-        elif parser.settings['space_after_start']:
+        elif 'space_after_start' in parser.settings and parser.settings['space_after_start']:
             write(v, first)
             first = prefix
 
@@ -121,7 +121,7 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
 
         # prepare the end block tag
         end = '\n' + parser.settings['block_end']
-        if parser.settings['space_before_end']:
+        if 'space_before_end' in parser.settings and parser.settings['space_before_end']:
             end = prefix + end
 
         if inline:
@@ -140,7 +140,10 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
                     for idx, line in enumerate(out):
                         newOut.append(line)
                         res = re.match("^\S", line)
-                        if res:
+
+                        # add space after this section, only if it is not the last
+                        # thing in this section
+                        if res and len(out) - 1 != idx:
                             newOut.append("")
 
                     write(v, prefix.join(newOut) + end)
@@ -169,7 +172,7 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
 
         if len(current_line.strip()) > 0:
             # cursor is on the function definition
-            if parser.settings['insert_after_def'] == False:
+            if 'insert_after_def' in parser.settings and parser.settings['insert_after_def'] == False:
                 # move the function down to begin our block
                 v.run_command("move_to", {"to": "bol", "extend": False})
                 v.run_command("insert", {"characters": "\n"})
@@ -182,12 +185,12 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
                 v.run_command("move", {"by": "lines", "forward": False})
                 # should we verify tabs are correct???
 
-        elif parser.settings['insert_after_def'] == False:
+        elif 'insert_after_def' in parser.settings and parser.settings['insert_after_def'] == False:
             point = v.sel()[0].end() + 1
             line_point = v.full_line(point)
             current_line = v.substr(line_point)
 
-        elif parser.settings['insert_after_def']:
+        elif 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
             col = v.rowcol(v.sel()[0].begin())[1]
             point = v.sel()[0].end() - (col + 1)
             line_point = v.full_line(point)
@@ -232,6 +235,7 @@ class NaturalDocsIndentCommand(sublime_plugin.TextCommand):
 
 
 class NaturalDocsJoinCommand(sublime_plugin.TextCommand):
+
     def run(self, edit):
         v = self.view
         for sel in v.sel():
@@ -251,7 +255,7 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
             punctuation = '#'
             punctuation_end = '#'
             re_whitespace = re.compile("^(\\s*)#")
-        elif v.scope_name(v.sel()[0].a).find('double-slash') > 0:
+        elif v.scope_name(v.sel()[0].a).find('comment.line.double-slash') > 0:
             punctuation = '/'
             punctuation_end = '//'
             re_whitespace = re.compile("^(\\s*)//")
