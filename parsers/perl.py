@@ -4,6 +4,7 @@ from base_parser import BaseParser
 
 
 class Parser(BaseParser):
+
     def setupSettings(self):
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
@@ -12,14 +13,13 @@ class Parser(BaseParser):
             "typeTag": "my",
             'varIdentifier': '[$]' + nameToken + '(?:->' + nameToken + ')*',
             'fnIdentifier': nameToken,
+            'classIdentifier': nameToken + '(::' + nameToken + ')*',
+            'classname': 'Package',
             "bool": "boolean",
             "function": "sub",
             'block_start': '#',
             'block_middle': '# ',
             'block_end': '#',
-            'space_after_start': False,
-            'space_before_end': False,
-            'insert_after_def': False
         }
 
         if self.preferences.get("natural_docs_perl_use_pod"):
@@ -42,6 +42,17 @@ class Parser(BaseParser):
             end = '\n' + end
 
         return end
+
+    def parseClass(self, line):
+        res = re.search(
+            'package\\s+(?P<name>' + self.settings['classIdentifier'] + ');',
+            line
+        )
+
+        if res:
+            return (res.group('name'), ())
+
+        return None
 
     def parseFunction(self, line):
         # sub [name] [($@%&+)] {

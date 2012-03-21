@@ -20,6 +20,10 @@ class BaseParser(object):
         return re.search('^\\s*\\*', line)
 
     def parse(self, line):
+        out = self.parseClass(line)  # (name, extends)
+        if (out):
+            return self.formatClass(*out)
+
         out = self.parseFunction(line)  # (name, args)
         if (out):
             return self.formatFunction(*out)
@@ -30,8 +34,31 @@ class BaseParser(object):
 
         return None
 
+    def parseClass(self, line):
+        return None
+
+    def parseFunction(self, line):
+        return None
+
+    def parseVar(self, line):
+        return None
+
     def escape(self, str):
         return string.replace(str, '$', '\$')
+
+    def formatClass(self, name, base=None):
+        out = []
+        classname = 'Class'
+        if 'classname' in self.settings:
+            classname = self.settings['classname']
+
+        out.append("%s: %s" % (classname, name))
+        out.append("${1:[%s description]}" % (self.escape(name)))
+
+        if base:
+            out.append("Extends: %s" % base)
+
+        return out
 
     def formatVar(self, name, val):
         out = []

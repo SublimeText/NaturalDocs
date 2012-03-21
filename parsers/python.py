@@ -13,32 +13,28 @@ class Parser(BaseParser):
             "typeTag": "my",
             'varIdentifier': nameToken + '(?:\.' + nameToken + ')*',
             'fnIdentifier': nameToken,
+            'classIdentifier': nameToken,
             "bool": "boolean",
             "function": "def",
             'block_start': '"""',
             'block_middle': '',
             'block_end': '"""',
-            'space_after_start': False,
-            'space_before_end': False,
             'insert_after_def': True
         }
 
-    def getBlockStart(self):
-        start = self.settings['blockStart']
-        if self.preferences.get("natural_docs_perl_use_pod"):
-            start += '\n'
+    def parseClass(self, line):
+        res = re.search(
+            'class\\s+(?P<name>' + self.settings['classIdentifier'] + ')\\s*\(?(?P<extends>[^\)]+)?\)?',
+            line
+        )
 
-        return start
+        if res:
+            return (res.group('name'), res.group('extends'))
 
-    def getBlockEnd(self):
-        end = self.settings['blockEnd']
-        if self.preferences.get("natural_docs_perl_use_pod"):
-            end = '\n' + end
-
-        return end
+        return None
 
     def parseFunction(self, line):
-        # sub [name] [($@%&+)] {
+        # def [name] [($@%&+)] {
         res = re.search(
             'def\\s+'
             + '(?P<name>' + self.settings['fnIdentifier'] + ')'
@@ -55,7 +51,7 @@ class Parser(BaseParser):
         # return (res.group('name'), ())
 
     def getArgType(self, arg):
-        #  function add($x, $y = 1)
+        #  def add($x, $y = 1)
         res = re.search(
             '(?P<name>' + self.settings['varIdentifier'] + ")\\s*=\\s*(?P<val>.*)",
             arg

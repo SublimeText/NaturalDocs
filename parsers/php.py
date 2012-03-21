@@ -4,6 +4,7 @@ from base_parser import BaseParser
 
 
 class Parser(BaseParser):
+
     def setupSettings(self):
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
@@ -12,15 +13,24 @@ class Parser(BaseParser):
             "typeTag": "var",
             'varIdentifier': '[$]' + nameToken + '(?:->' + nameToken + ')*',
             'fnIdentifier': nameToken,
+            'classIdentifier': nameToken,
             'bool': 'boolean',
             'function': 'function',
             'block_start': '/**',
             'block_middle': ' * ',
             'block_end': '*/',
-            'space_after_start': False,
-            'space_before_end': False,
-            'insert_after_def': False
         }
+
+    def parseClass(self, line):
+        res = re.search(
+            'class\\s+(?P<name>' + self.settings['classIdentifier'] + ')(\\s+extends\\s+)?(?P<extends>' + self.settings['classIdentifier'] + ')?',
+            line
+        )
+
+        if res:
+            return (res.group('name'), res.group('extends'))
+
+        return None
 
     def parseFunction(self, line):
         res = re.search(
@@ -31,6 +41,7 @@ class Parser(BaseParser):
             + '\\s*\\((?P<args>.*)\)',
             line
         )
+
         if not res:
             return None
 
