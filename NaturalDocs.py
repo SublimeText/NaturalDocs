@@ -172,27 +172,26 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
 
         if len(current_line.strip()) > 0:
             # cursor is on the function definition
-            if 'insert_after_def' in parser.settings and parser.settings['insert_after_def'] == False:
-                # move the function down to begin our block
-                v.run_command("move_to", {"to": "bol", "extend": False})
-                v.run_command("insert", {"characters": "\n"})
-                v.run_command("move", {"by": "lines", "forward": False})
-            else:
+            if 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
                 # position the cursor inside the function
                 v.run_command("move", {"by": "lines", "forward": True})
                 v.run_command("move_to", {"to": "bol", "extend": False})
                 v.run_command("insert", {"characters": "\n"})
                 v.run_command("move", {"by": "lines", "forward": False})
                 # should we verify tabs are correct???
-
-        elif 'insert_after_def' in parser.settings and parser.settings['insert_after_def'] == False:
-            point = v.sel()[0].end() + 1
-            line_point = v.full_line(point)
-            current_line = v.substr(line_point)
+            else:
+                # move the function down to begin our block
+                v.run_command("move_to", {"to": "bol", "extend": False})
+                v.run_command("insert", {"characters": "\n"})
+                v.run_command("move", {"by": "lines", "forward": False})
 
         elif 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
             col = v.rowcol(v.sel()[0].begin())[1]
             point = v.sel()[0].end() - (col + 1)
+            line_point = v.full_line(point)
+            current_line = v.substr(line_point)
+        else:
+            point = v.sel()[0].end() + 1
             line_point = v.full_line(point)
             current_line = v.substr(line_point)
 
