@@ -79,6 +79,7 @@ Results in:
 ///////////////////////////
 // this is a pretty item //
 ///////////////////////////
+```
 
 Examples in Perl:
 
@@ -232,6 +233,7 @@ def test_test(one, two=12, three='something'):
 If this setting is set to `True`, then pressing `Enter` on a line with a double-slash or number-sign comment will place that comment punctuation at the beginning of the next line.
 
 Example:
+
 ```javascript
 // hello |
 ```
