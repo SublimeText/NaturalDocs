@@ -57,11 +57,13 @@ class Parser(BaseParser):
     def parseFunction(self, line):
         # sub [name] [($@%&+)] {
         res = re.search(
+            # Declaration
             'sub\\s+'
+            # Identifier
             + '(?P<name>' + self.settings['fnIdentifier'] + ')'
-            # sub fnName
+            # Parameter list
             + '\\s*\(?(?P<args>[$@%&]+)?\)?'
-            # (arg1, arg2)
+            # Block Starter
             + '\\s*{',
             line
         )
@@ -70,7 +72,6 @@ class Parser(BaseParser):
             return None
 
         return (res.group('name'), res.group('args'))
-        # return (res.group('name'), ())
 
     def getArgType(self, arg):
         types = {
@@ -99,9 +100,9 @@ class Parser(BaseParser):
             #   var $foo = blah,
             #       $foo = blah;
             #   $baz->foo = blah;
-            #   $baz = array(
+            #   $baz = [\{\[]
             #        'foo' => blah
-            #   )
+            #   [\}\]]
 
             '(?P<name>' + self.settings['varIdentifier'] + ')\\s*=>?\\s*(?P<val>.*?)(?:[;,]|$)',
             line
@@ -117,29 +118,3 @@ class Parser(BaseParser):
             return (res.group('name'), None)
 
         return None
-
-    def guessTypeFromValue(self, val):
-        if self.is_numeric(val):
-            return "float" if '.' in val else "integer"
-        if val[0] == '"' or val[0] == "'":
-            return "string"
-        if val[:5] == 'array':
-            return "array"
-        if val.lower() in ('true', 'false', 'filenotfound'):
-            return 'boolean'
-        if val[:4] == 'new ':
-            res = re.search('new (' + self.settings['fnIdentifier'] + ')', val)
-            return res and res.group(1) or None
-        return None
-
-    def getFunctionReturnType(self, name):
-        if (name[:2] == '__'):
-            if name in ('__construct', '__set', '__unset', '__wakeup'):
-                return None
-            if name == '__sleep':
-                return 'array'
-            if name == '__toString':
-                return 'string'
-            if name == '__isset':
-                return 'boolean'
-        return super(Parser, self).getFunctionReturnType(name)
