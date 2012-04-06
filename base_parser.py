@@ -5,6 +5,9 @@ import string
 
 class BaseParser(object):
 
+    NO_RETURN_TYPE = 1
+    UNKNOWN_RETURN_TYPE = 2
+
     def __init__(self, preferences={}):
         self.preferences = preferences
         self.setupSettings()
@@ -21,11 +24,11 @@ class BaseParser(object):
 
     def parse(self, line):
         out = self.parseClass(line)  # (name, extends)
-        if (out):
+        if out:
             return self.formatClass(*out)
 
         out = self.parseFunction(line)  # (name, args)
-        if (out):
+        if out:
             return self.formatFunction(*out)
 
         out = self.parseVar(line)
@@ -46,8 +49,9 @@ class BaseParser(object):
     def escape(self, str):
         return string.replace(str, '$', '\$')
 
-    def formatClass(self, name, base=None):
+    def formatClass(self, name, base=None, interface=None):
         out = []
+
         classname = 'Class'
         if 'classname' in self.settings:
             classname = self.settings['classname']
@@ -57,6 +61,9 @@ class BaseParser(object):
 
         if base:
             out.append("Extends: %s" % base)
+
+        if interface:
+            out.append("Implements: %s" % interface)
 
         return out
 
@@ -69,16 +76,20 @@ class BaseParser(object):
 
         return out
 
-    def formatFunction(self, name, args):
+    def formatFunction(self, name, args, return_type=None):
         out = []
 
-        out.append("Function: %s" % (name))
+        function_name = 'Function'
+        if 'function_name' in self.settings:
+            function_name = self.settings['function_name']
+
+        out.append("%s: %s" % (function_name, name))
         out.append("${1:description}")
 
         self.addExtraTags(out)
 
         # if there are arguments, add a Parameter section for each
-        if (args):
+        if args:
             # remove comments inside the argument list.
             args = re.sub("/\*.*?\*/", '', args)
             out.append("Parameters:")
@@ -96,16 +107,16 @@ class BaseParser(object):
             if self.preferences.get("natural_docs_spacer_between_sections"):
                 out.append("")
 
-        retType = self.getFunctionReturnType(name)
-        if retType is not None:
+        if return_type is None:
+            return_type = self.getFunctionReturnType(name)
+
+        if return_type is not None and return_type is not self.NO_RETURN_TYPE:
             out.append("Returns:")
 
-            if retType:
-                retType = "<" + retType + ">"
+            if return_type is not self.UNKNOWN_RETURN_TYPE:
+                out.append("  %s - ${1:return description}" % (return_type))
             else:
-                retType = ""
-
-            out.append("  %s ${1:return description}" % (retType))
+                out.append("  ${1:return description}")
 
         return out
 
@@ -129,20 +140,7 @@ class BaseParser(object):
 
     def getFunctionReturnType(self, name):
         """ returns None for no return type. False meaning unknown, or a string """
-        name = re.sub("^[$_]", "", name)
-
-        if re.match("[A-Z]", name):
-            # no return, but should add a class
-            return None
-
-        if re.match('(?:set|add)[A-Z_]', name):
-            # setter/mutator, no return
-            return None
-
-        if re.match('(?:is|has)[A-Z_]', name):  # functions starting with 'is' or 'has'
-            return self.settings['bool']
-
-        return False
+        return self.UNKNOWN_RETURN_TYPE
 
     def parseArgs(self, args):
         """ an array of tuples, the first being the best guess at the type, the second being the name """
