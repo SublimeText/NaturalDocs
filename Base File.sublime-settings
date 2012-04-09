@@ -10,7 +10,7 @@
   // next line as well
   "natural_docs_continue_comments": true,
 
-  // the number of spaces to add after the leading *
+  // the number of spaces to add after the leading comment punctuation (e.g. * or # or //)
   "natural_docs_indentation_spaces": 1,
 
   // Any additional boilerplate tags which should be added to each block.
