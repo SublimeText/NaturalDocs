@@ -126,7 +126,7 @@ Constructor:
   public MyClass() { ... }
 ```
 
-Result in:
+Results in:
 
 ```java
   /**
@@ -143,7 +143,7 @@ Method:
   public Map<String, String> methodOne(Map<String, String> one, List<Map<String, String>> two, char[] three, int four)  { ... }
 ```
 
-Result in:
+Results in:
 
 ```java
   /**
@@ -355,7 +355,32 @@ def test_test(one, two=12, three='something'):
 
 ## natural_docs_deep_indent
 
-*To Be Done & Documented*
+If this is set to `True` then pressing `Tab` inside a documentation block, will try to add enough spaces to align the cursor below the description section of the previous line (which only the Parameters section has), otherwise it will just insert two spaces.
+
+Example:
+
+```javascript
+  /**
+   * ...
+   * Parameters:
+   *
+   *   one   - this parameter does something
+   *   |
+   */
+```
+
+If the cursor is below a line that contains ' - ', then pressing `Tab` will insert enough spaces to align the cursor under the description of the prvious line. Result:
+
+```javascript
+  /**
+   * ...
+   * Parameters:
+   *
+   *   one   - this parameter does something
+   *           |
+   */
+```
+
 
 ## natural_docs_continue_comments
 
@@ -475,6 +500,7 @@ If set to `false`, the normal comment tag will be used. Example:
 * Add shortcuts for inserting [NaturalDoc Group](http://www.naturaldocs.org/documenting/reference.html#Summaries) blocks
 * Add more languages (C/C++, Ruby)
 * Something special for PHP5.4 (maybe parse traits like a class?)
+* Snakecase all the Pasrers' function names
 * Make awesomer
 
 # Changelog
@@ -491,3 +517,4 @@ If set to `false`, the normal comment tag will be used. Example:
 * Added Java parser (updated BaseParser to be more robust)
 * Fixed an indent bug with decorate command
 * Fixing bug in PHP parser. Class parser would not add `implements` to docblock
+* Fixing keymaps, `natural_docs_deep_indent`, and `NaturalDocsIndentCommand` to work
