@@ -5,8 +5,8 @@ import string
 
 class BaseParser(object):
 
-    NO_RETURN_TYPE = 1
-    UNKNOWN_RETURN_TYPE = 2
+    NO_RETURN_TYPE = 1  # e.g. void
+    UNKNOWN_RETURN_TYPE = 2  # e.g. add Returns section with no type
 
     def __init__(self, preferences={}):
         self.preferences = preferences
@@ -91,9 +91,10 @@ class BaseParser(object):
         # if there are arguments, add a Parameter section for each
         if args:
             # remove comments inside the argument list.
-            args = re.sub("/\*.*?\*/", '', args)
+            # args = re.sub("/\*.*?\*/", '', args)
             out.append("Parameters:")
             params = []
+
             for arg in self.parseArgs(args):
                 description = '[type/description]'
                 if arg[0]:
