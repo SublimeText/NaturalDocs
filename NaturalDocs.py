@@ -1,7 +1,7 @@
 """
-NaturalDocs v0.1
-by Nathan Levin-Greenhaw
-https://github.com/njlg/
+NaturalDocs
+by: Nathan Levin-Greenhaw
+site: https://github.com/SublimeText/NaturalDocs
 
 Based on DocBlockr by Nick Fisher (https://github.com/spadgos/sublime-jsdocs)
 """
@@ -203,34 +203,22 @@ class NaturalDocsIndentCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         v = self.view
-        currPos = v.sel()[0].begin()
-        currLineRegion = v.line(currPos)
-        currCol = currPos - currLineRegion.begin()  # which column we're currently in
-        prevLine = v.substr(v.line(v.line(currPos).begin() - 1))
-        spaces = self.getIndentSpaces(prevLine)
-        if spaces:
-            toStar = len(re.search("^(\\s*\\*)", prevLine).group(1))
-            toInsert = spaces - currCol + toStar
-            if spaces is None or toInsert <= 0:
-                v.run_command(
-                    'insert_snippet', {
-                        'contents': "\t"
-                    }
-                )
+        current_position = v.sel()[0].begin()
+        current_line_region = v.line(current_position)
+        current_column = current_position - current_line_region.begin()  # which column we're currently in
+        previous_line = v.substr(v.line(v.line(current_position).begin() - 1))
+
+        if previous_line.find(' - ') > -1:
+            column = previous_line.find(' - ') + 3
+            spaces_to_insert = column - current_column
+
+            if spaces_to_insert > 0:
+                v.insert(edit, current_position, " " * spaces_to_insert)
                 return
 
-            v.insert(edit, currPos, " " * toInsert)
-        else:
-            v.insert(edit, currPos, "\t")
-
-    def getIndentSpaces(self, line):
-        res = re.search("^\\s*\\*(?P<fromStar>\\s*@(?:param|property)\\s+\\S+\\s+\\S+\\s+)\\S", line) \
-           or re.search("^\\s*\\*(?P<fromStar>\\s*@(?:returns?|define)\\s+\\S+\\s+)\\S", line) \
-           or re.search("^\\s*\\*(?P<fromStar>\\s*@[a-z]+\\s+)\\S", line) \
-           or re.search("^\\s*\\*(?P<fromStar>\\s*)", line)
-        if res:
-            return len(res.group('fromStar'))
-        return None
+        # default to inserting an indent
+        # TODO: make default docblock indent a preference? per source type?
+        v.insert(edit, current_position, "  ")
 
 
 class NaturalDocsJoinCommand(sublime_plugin.TextCommand):
