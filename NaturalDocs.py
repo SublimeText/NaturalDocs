@@ -268,11 +268,10 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
             maxLength = 0
             lines = v.lines(sel)
             for lineRegion in lines:
-                leadingWS = len(re_whitespace.match(v.substr(lineRegion)).group(1))
+                leadingWS = re_whitespace.match(v.substr(lineRegion)).group(1)
                 maxLength = max(maxLength, lineRegion.size())
 
-            lineLength = maxLength - leadingWS
-            leadingWS = " " * leadingWS
+            lineLength = maxLength - len(leadingWS)
             v.insert(edit, sel.end(), leadingWS + punctuation * (lineLength + endLength) + "\n")
 
             for lineRegion in reversed(lines):
