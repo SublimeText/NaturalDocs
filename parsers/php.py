@@ -22,13 +22,21 @@ class Parser(BaseParser):
         }
 
     def parseClass(self, line):
+        # public class ArticlesDAO extends TableDAO {
         res = re.search(
-            'class\\s+(?P<name>' + self.settings['classIdentifier'] + ')(\\s+extends\\s+)?(?P<extends>' + self.settings['classIdentifier'] + ')?',
+            # Declaration
+            'class'
+            # Identifier
+            + '\\s+(?P<name>' + self.settings['classIdentifier'] + ')'
+            # Extends (optional)
+            + '(\\s+extends\\s+)?(?P<extends>' + self.settings['classIdentifier'] + ')?'
+            # Implements (optional)
+            + '(\\s+implements\\s+)?(?P<implements>(' + self.settings['classIdentifier'] + ',?\s*)+)?',
             line
         )
 
         if res:
-            return (res.group('name'), res.group('extends'))
+            return (res.group('name'), res.group('extends'), res.group('implements'))
 
         return None
 
