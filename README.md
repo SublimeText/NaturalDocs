@@ -2,7 +2,7 @@ NaturalDocs is a [Sublime Text 2](http://www.sublimetext.com/) package which mak
 
 # Languages
 
-Currently supported languages: Perl, JavaScript, PHP, and Python.
+Currently supported languages: Java, JavaScript, Perl, PHP, and Python.
 
 # Usage
 
@@ -97,29 +97,72 @@ Results in:
 
 ## Language Specific Examples
 
-### Perl Example
+### Java Example
 
-Code:
+Class:
 
-```perl
-sub index {
+```java
+public class MyClass extends BaseClass implements ClassA, ClassB { ... }
 ```
 
 Put cursor on or before the line and pressing `Super-N` will result in:
 
-```perl
-=begin ND
+```java
+/**
+ * Class: MyClass
+ *
+ * [MyClass description]
+ *
+ * Extends: BaseClass
+ *
+ * Implements: ClassA, ClassB
+ */
+public class MyClass extends BaseClass implements ClassA, ClassB { ... }
+```
 
-Function: index
+Constructor:
 
-description
+```java
+  public MyClass() { ... }
+```
 
-Returns:
+Result in:
 
-   return description
+```java
+  /**
+   * Constructor: MyClass
+   *
+   * description
+   */
+  public MyClass() { ... }
+```
 
-=cut
-sub index {
+Method:
+
+```java
+  public Map<String, String> methodOne(Map<String, String> one, List<Map<String, String>> two, char[] three, int four)  { ... }
+```
+
+Result in:
+
+```java
+  /**
+   * Method: methodOne
+   *
+   * description
+   *
+   * Parameters:
+   *
+   *   one   - Map<String,String>
+   *   two   - List<Map<String,String>>
+   *   three - char[]
+   *   four  - int
+   *
+   * Returns:
+   *
+   *   Map<String, String> - return description
+   */
+  public Map<String, String> methodOne(Map<String, String> one, List<Map<String, String>> two, char[] three, int four) { ... }
 ```
 
 ### JavaScript Example
@@ -151,16 +194,83 @@ Put cursor on or before the line and pressing `Super-N` will result in:
 function testThis($one, $two, $three) {}
 ```
 
+### Perl Example
+
+Package Code:
+
+```perl
+package A::B::C;
+```
+
+Put cursor on or before the line and pressing `Super-N` will result in:
+
+```perl
+=begin ND
+
+Package: A::B::C
+
+[A::B::C description]
+
+=cut
+package A::B::C;
+```
+
+Function Code:
+
+```perl
+sub index { ... }
+```
+
+Results in:
+
+```perl
+=begin ND
+
+Function: index
+
+description
+
+Returns:
+
+   return description
+
+=cut
+sub index { ... }
+```
+
 ### PHP Example
 
-Code:
+Class:
+
+```php
+<?php
+class ClassD extends ClassA implements ClassB, ClassC { ... }
+```
+
+Put cursor on or before the line and pressing `Super-N` will result in:
+
+```php
+<?php
+/**
+ * Class: ClassD
+ *
+ * [ClassD description]
+ *
+ * Extends: ClassA
+ *
+ * Implements: ClassB, ClassC
+ */
+class ClassD extends ClassA implements ClassB, ClassC { ... }
+```
+
+Function:
 
 ```php
 <?php
 function testThis($one='', $two=true, $three=array()) {}
 ```
 
-Put cursor on or before the line and pressing `Super-N` will result in:
+Results in:
 
 ```php
 <?php
@@ -184,14 +294,33 @@ function testThis($one='', $two=true, $three=array()) {}
 
 ### Python Example
 
-Code:
+Class Code:
+
+```python
+class ClassB(ClassA):
+```
+
+Put cursor on or /after/ the line and pressing `Super-N` will result in:
+
+```python
+class ClassB(ClassA):
+  """
+  Class: ClassB
+
+  [ClassB description]
+
+  Extends: ClassA
+  """
+```
+
+Function Code:
 
 ```python
 def test_test(one, two=12, three=[]):
     return 'yes'
 ```
 
-Put cursor on or /after/ the line and pressing `Super-N` will result in:
+Results in:
 
 ```python
 def test_test(one, two=12, three='something'):
@@ -345,6 +474,7 @@ If set to `false`, the normal comment tag will be used. Example:
 
 * Add shortcuts for inserting [NaturalDoc Group](http://www.naturaldocs.org/documenting/reference.html#Summaries) blocks
 * Add more languages (C/C++, Ruby)
+* Something special for PHP5.4 (maybe parse traits like a class?)
 * Make awesomer
 
 # Changelog
@@ -355,3 +485,9 @@ If set to `false`, the normal comment tag will be used. Example:
 * Added the ability to add Class/Package doc-blocks
 * Changed setting `natural_docs_extend_double_slash` to `natural_docs_continue_comments`
 * Added keymappings to continue number-sign comments if `natural_docs_continue_comments` is `True`
+
+## April 9, 2012
+
+* Added Java parser (updated BaseParser to be more robust)
+* Fixed an indent bug with decorate command
+* Fixing bug in PHP parser. Class parser would not add `implements` to docblock
