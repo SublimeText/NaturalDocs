@@ -8,8 +8,6 @@ class Parser(BaseParser):
     def setupSettings(self):
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
-            # curly brackets around the type information
-            'curlyTypes': False,
             "typeTag": "my",
             'varIdentifier': '[$]' + nameToken + '(?:->' + nameToken + ')*',
             'fnIdentifier': nameToken,
@@ -28,20 +26,6 @@ class Parser(BaseParser):
             self.settings['block_end'] = '=cut'
             self.settings['space_after_start'] = True
             self.settings['space_before_end'] = True
-
-    def getBlockStart(self):
-        start = self.settings['blockStart']
-        if self.preferences.get("natural_docs_perl_use_pod"):
-            start += '\n'
-
-        return start
-
-    def getBlockEnd(self):
-        end = self.settings['blockEnd']
-        if self.preferences.get("natural_docs_perl_use_pod"):
-            end = '\n' + end
-
-        return end
 
     def parseClass(self, line):
         res = re.search(

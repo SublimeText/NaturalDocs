@@ -9,8 +9,6 @@ class Parser(BaseParser):
 
     def setupSettings(self):
         self.settings = {
-            # curly brackets around the type information
-            'curlyTypes': True,
             'typeTag': 'type',
             # technically, they can contain all sorts of unicode, but whatever
             'varIdentifier': '[a-zA-Z][a-zA-Z_0-9]*',

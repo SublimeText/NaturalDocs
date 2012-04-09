@@ -8,8 +8,6 @@ class Parser(BaseParser):
     def setupSettings(self):
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
-            # curly brackets around the type information
-            'curlyTypes': False,
             "typeTag": "my",
             'varIdentifier': nameToken + '(?:\.' + nameToken + ')*',
             'fnIdentifier': nameToken,
@@ -22,7 +20,7 @@ class Parser(BaseParser):
             'insert_after_def': True
         }
 
-    def parseClass(self, line):
+    def pargseClass(self, line):
         res = re.search(
             'class\\s+(?P<name>' + self.settings['classIdentifier'] + ')\\s*\(?(?P<extends>[^\)]+)?\)?',
             line
@@ -105,15 +103,3 @@ class Parser(BaseParser):
             res = re.search('new (' + self.settings['fnIdentifier'] + ')', val)
             return res and res.group(1) or None
         return None
-
-    def getFunctionReturnType(self, name):
-        if (name[:2] == '__'):
-            if name in ('__construct', '__set', '__unset', '__wakeup'):
-                return None
-            if name == '__sleep':
-                return 'array'
-            if name == '__toString':
-                return 'string'
-            if name == '__isset':
-                return 'boolean'
-        return super(Parser, self).getFunctionReturnType(name)

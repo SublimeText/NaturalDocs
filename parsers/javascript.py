@@ -6,8 +6,6 @@ from base_parser import BaseParser
 class Parser(BaseParser):
     def setupSettings(self):
         self.settings = {
-            # curly brackets around the type information
-            "curlyTypes": True,
             "typeTag": "type",
             # technically, they can contain all sorts of unicode, but w/e
             "varIdentifier": '[a-zA-Z_$][a-zA-Z_$0-9]*',
@@ -16,10 +14,7 @@ class Parser(BaseParser):
             "function": "Function",
             'block_start': '/**',
             'block_middle': ' * ',
-            'block_end': '*/',
-            'space_after_start': False,
-            'space_before_end': False,
-            'insert_after_def': False
+            'block_end': '*/'
         }
 
     def parseFunction(self, line):

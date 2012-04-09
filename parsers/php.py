@@ -8,8 +8,6 @@ class Parser(BaseParser):
     def setupSettings(self):
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
-            # curly brackets around the type information
-            'curlyTypes': False,
             "typeTag": "var",
             'varIdentifier': '[$]' + nameToken + '(?:->' + nameToken + ')*',
             'fnIdentifier': nameToken,
