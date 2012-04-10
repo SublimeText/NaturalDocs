@@ -269,3 +269,48 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
                 # break
 
             v.insert(edit, sel.begin(), punctuation * (lineLength + endLength) + "\n")
+
+
+class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
+
+    def run(self, edit):
+        v = self.view
+
+        parser = getParser(v)
+
+        block_start = parser.settings['block_start']
+        block_end = parser.settings['block_end']
+        block_middle = ''
+        if 'block_middle' in parser.settings:
+            block_middle = parser.settings['block_middle']
+
+        block = block_start + '\n'
+        if 'space_after_start' in parser.settings and parser.settings['space_after_start']:
+            block += '\n'
+        block += block_middle + 'Group: \n'
+        if 'space_before_end' in parser.settings and parser.settings['space_before_end']:
+            block += '\n'
+        block += block_end
+
+        for sel in v.sel():
+            lines = v.lines(sel)
+            for line_region in lines:
+                # step 1 - move anything on the line down
+                current_line = v.substr(line_region)
+                if current_line.strip():
+                    v.run_command("move_to", {"to": "bol", "extend": False})
+                    v.run_command("insert", {"characters": "\n"})
+                    v.run_command("move", {"by": "lines", "forward": False})
+
+                # keep whitespace
+                whitespace = re.match('^\s+', current_line).group(0)
+                doc_block = block.replace('\n', '\n' + whitespace)
+
+                # step 2 - insert group block
+                v.insert(edit, line_region.end(), doc_block)
+
+        # step 3 - position cursor after group label
+        v.run_command("move", {"by": "lines", "forward": False})
+        if 'space_before_end' in parser.settings and parser.settings['space_before_end']:
+            v.run_command("move", {"by": "lines", "forward": False})
+        v.run_command("move_to", {"to": "eol", "extend": False})

@@ -1,6 +1,7 @@
 [
     { "keys": ["super+n"], "command": "natural_docs_insert_block" },
     { "keys": ["super+d"], "command": "natural_docs_decorate" },
+    { "keys": ["super+g"], "command": "natural_docs_group" },
     { "keys": ["enter"], "command": "natural_docs", "context" :
         [
             { "key": "setting.auto_indent", "operator": "equal", "operand": true, "match_all": true },
