@@ -4,20 +4,21 @@ from base_parser import BaseParser
 
 
 class Parser(BaseParser):
-    def setupSettings(self):
+
+    def setup_settings(self):
         self.settings = {
-            "typeTag": "type",
+            'typeTag': 'var',
             # technically, they can contain all sorts of unicode, but w/e
-            "varIdentifier": '[a-zA-Z_$][a-zA-Z_$0-9]*',
-            "fnIdentifier": '[a-zA-Z_$][a-zA-Z_$0-9]*',
-            "bool": "Boolean",
-            "function": "Function",
+            'varIdentifier': '[a-zA-Z_$][a-zA-Z_$0-9]*',
+            'fnIdentifier': '[a-zA-Z_$][a-zA-Z_$0-9]*',
+            'bool': 'Boolean',
+            'function': 'Function',
             'block_start': '/**',
             'block_middle': ' * ',
             'block_end': '*/'
         }
 
-    def parseFunction(self, line):
+    def parse_function(self, line):
         res = re.search(
             #   fnName = function,  fnName : function
             '(?:(?P<name1>' + self.settings['varIdentifier'] + ')\s*[:=]\s*)?'
@@ -37,7 +38,7 @@ class Parser(BaseParser):
 
         return (name, args)
 
-    def parseVar(self, line):
+    def parse_var(self, line):
         res = re.search(
             #   var foo = blah,
             #       foo = blah;
@@ -54,15 +55,15 @@ class Parser(BaseParser):
 
         return (res.group('name'), res.group('val').strip())
 
-    def guessTypeFromValue(self, val):
+    def guess_type_from_value(self, val):
         if self.is_numeric(val):
-            return "Number"
+            return 'Number'
         if val[0] == '"' or val[0] == "'":
-            return "String"
+            return 'String'
         if val[0] == '[':
-            return "Array"
+            return 'Array'
         if val[0] == '{':
-            return "Object"
+            return 'Object'
         if val == 'true' or val == 'false':
             return 'Boolean'
         if re.match('RegExp\\b|\\/[^\\/]', val):

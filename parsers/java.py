@@ -7,9 +7,8 @@ class Parser(BaseParser):
 
     CONSTRUCTOR_TYPE = 3
 
-    def setupSettings(self):
+    def setup_settings(self):
         self.settings = {
-            'typeTag': 'type',
             # technically, they can contain all sorts of unicode, but whatever
             'varIdentifier': '[a-zA-Z][a-zA-Z_0-9]*',
             'fnIdentifier': '[a-zA-Z][a-zA-Z_0-9]*',
@@ -22,7 +21,7 @@ class Parser(BaseParser):
             'block_end': '*/',
         }
 
-    def parseClass(self, line):
+    def parse_class(self, line):
         # public class ArticlesDAO extends TableDAO {
         res = re.search(
             # Declaration
@@ -41,7 +40,7 @@ class Parser(BaseParser):
 
         return None
 
-    def parseFunction(self, line):
+    def parse_function(self, line):
         res = re.search(
             # Modifier
             '(public|private|protected|static|final|native|synchronized|abstract|threadsafe|transient)+'
@@ -72,7 +71,7 @@ class Parser(BaseParser):
 
         return (name, args, return_type)
 
-    def parseVar(self, line):
+    def parse_var(self, line):
         res = re.search(
             #   <Type> foo = blah;
             #   baz.foo = blah;
@@ -85,7 +84,7 @@ class Parser(BaseParser):
 
         return (res.group('name'), res.group('val').strip())
 
-    def parseArgs(self, args):
+    def parse_Args(self, args):
         """ an array of tuples, the first being the best guess at the type, the second being the name """
         out = []
 
@@ -104,11 +103,11 @@ class Parser(BaseParser):
 
         return out
 
-    def formatFunction(self, name, args, return_type=None):
+    def format_function(self, name, args, return_type=None):
         """
         Override BaseParser to change Method to Constructor where applicable
         """
-        out = super(Parser, self).formatFunction(name, args, return_type)
+        out = super(Parser, self).format_function(name, args, return_type)
 
         # all methods must have a return type specified, therefore if there
         # BaseParser did not find a return type this must be a constructor
