@@ -1,6 +1,6 @@
 """
 NaturalDocs
-by: Nathan Levin-Greenhaw
+by: Nathan Levin-Greenhaw (njlg)
 site: https://github.com/SublimeText/NaturalDocs
 
 Based on DocBlockr by Nick Fisher (https://github.com/spadgos/sublime-jsdocs)
@@ -34,7 +34,7 @@ def counter():
         yield(count)
 
 
-def getParser(view):
+def get_parser(view):
     scope = view.scope_name(view.sel()[0].end())
     preferences = view.settings()
 
@@ -63,12 +63,12 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
         settings = v.settings()
         point = v.sel()[0].end()
 
-        parser = getParser(v)
+        parser = get_parser(v)
         parser.inline = inline
 
-        indentSpaces = max(0, settings.get("natural_docs_indentation_spaces", 1))
-        first = "\n" + parser.settings['block_middle'] + (" " * (1 - indentSpaces))
-        prefix = "\n" + parser.settings['block_middle'].lstrip() + (" " * (1 - indentSpaces))
+        indentSpaces = max(0, settings.get('natural_docs_indentation_spaces', 1))
+        first = "\n" + parser.block_middle + (" " * (1 - indentSpaces))
+        prefix = "\n" + parser.block_middle.lstrip() + (" " * (1 - indentSpaces))
 
         # read the current line if it did not get passed in
         line = ''
@@ -77,20 +77,21 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
         else:
             line = read_line(v, point)
 
-            if 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
+            if parser.insert_after_def:
                 # move cursor below current line
                 v.run_command("move", {"by": "lines", "forward": True})
                 v.run_command("move_to", {"to": "bol", "extend": False})
                 v.run_command("insert", {"characters": "\n"})
                 v.run_command("move", {"by": "lines", "forward": False})
 
-        if re.search(re.escape(parser.settings['block_start']), line) is None:
-            start = parser.settings['block_start']
-            if 'space_after_start' in parser.settings and parser.settings['space_after_start']:
+        if re.search(re.escape(parser.block_start), line) is None:
+            start = parser.block_start
+            if parser.space_after_start:
                 start += first
                 first = prefix
             write(v, start)
-        elif 'space_after_start' in parser.settings and parser.settings['space_after_start']:
+
+        elif parser.space_after_start:
             write(v, first)
             first = prefix
 
@@ -103,8 +104,8 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
 
         # if there is a line following this
         if line:
-            if parser.isExistingComment(line):
-                write(v, "\n" + parser.settings['block_middle'] + (" " * (1 - indentSpaces)))
+            if parser.is_existing_comment(line):
+                write(v, "\n" + parser.block_middle + (" " * (1 - indentSpaces)))
                 return
             # match against a function declaration.
             out = parser.parse(line)
@@ -120,8 +121,8 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
                 out[index] = re.sub("(\\$\\{)\\d+(:[^}]+\\})", swapTabs, outputLine)
 
         # prepare the end block tag
-        end = '\n' + parser.settings['block_end']
-        if 'space_before_end' in parser.settings and parser.settings['space_before_end']:
+        end = '\n' + parser.block_end
+        if parser.space_before_end:
             end = prefix + end
 
         if inline:
@@ -163,7 +164,7 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
     def run(self, edit):
         v = self.view
 
-        parser = getParser(v)
+        parser = get_parser(v)
 
         # are one on the line or above it?
         point = v.sel()[0].begin()
@@ -172,7 +173,7 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
 
         if len(current_line.strip()) > 0:
             # cursor is on the function definition
-            if 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
+            if parser.insert_after_def:
                 # position the cursor inside the function
                 v.run_command("move", {"by": "lines", "forward": True})
                 v.run_command("move_to", {"to": "bol", "extend": False})
@@ -185,7 +186,7 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
                 v.run_command("insert", {"characters": "\n"})
                 v.run_command("move", {"by": "lines", "forward": False})
 
-        elif 'insert_after_def' in parser.settings and parser.settings['insert_after_def']:
+        elif parser.insert_after_def:
             col = v.rowcol(v.sel()[0].begin())[1]
             point = v.sel()[0].end() - (col + 1)
             line_point = v.full_line(point)
@@ -238,6 +239,7 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
         punctuation = ''
         re_whitespace = ''
         punctuation_end = ''
+
         if v.scope_name(v.sel()[0].a).find('comment.line.number-sign') > 0:
             punctuation = '#'
             punctuation_end = '#'
@@ -252,9 +254,11 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
 
         endLength = len(punctuation_end) + 1
         v.run_command('expand_selection', {'to': 'scope'})
+
         for sel in v.sel():
             maxLength = 0
             lines = v.lines(sel)
+
             for lineRegion in lines:
                 leadingWS = re_whitespace.match(v.substr(lineRegion)).group(1)
                 maxLength = max(maxLength, lineRegion.size())
@@ -276,20 +280,22 @@ class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         v = self.view
 
-        parser = getParser(v)
+        parser = get_parser(v)
 
-        block_start = parser.settings['block_start']
-        block_end = parser.settings['block_end']
-        block_middle = ''
-        if 'block_middle' in parser.settings:
-            block_middle = parser.settings['block_middle']
+        block_start = parser.block_start
+        block_end = parser.block_end
+        block_middle = parser.block_middle
 
         block = block_start + '\n'
-        if 'space_after_start' in parser.settings and parser.settings['space_after_start']:
+
+        if parser.space_after_start:
             block += '\n'
+
         block += block_middle + 'Group: \n'
-        if 'space_before_end' in parser.settings and parser.settings['space_before_end']:
+
+        if parser.space_before_end:
             block += '\n'
+
         block += block_end
 
         for sel in v.sel():
@@ -311,6 +317,8 @@ class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
 
         # step 3 - position cursor after group label
         v.run_command("move", {"by": "lines", "forward": False})
-        if 'space_before_end' in parser.settings and parser.settings['space_before_end']:
+
+        if parser.space_before_end:
             v.run_command("move", {"by": "lines", "forward": False})
+
         v.run_command("move_to", {"to": "eol", "extend": False})
