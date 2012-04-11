@@ -10,53 +10,67 @@ class BaseParser(object):
 
     def __init__(self, preferences={}):
         self.preferences = preferences
-        self.setupSettings()
+        self.default_settings = {
+            'class_name': 'Class',
+            'function_name': 'Function',
+            'block_start': '',
+            'block_middle': '',
+            'block_end': ''
+        }
+        self.setup_settings()
 
-    def setupSettings(self):
+    def setup_settings(self):
         self.settings = {}
         return self.settings
 
-    def getSettings(self):
+    def get_settings(self):
         return self.settings
 
-    def isExistingComment(self, line):
+    def __getattr__(self, name):
+        if name in self.settings:
+            return self.settings[name]
+
+        if name in self.default_settings:
+            return self.default_settings[name]
+
+        return None
+
+    def is_existing_comment(self, line):
         return re.search('^\\s*\\*', line)
 
     def parse(self, line):
-        out = self.parseClass(line)  # (name, extends)
+        out = self.parse_class(line)  # (name, extends)
         if out:
-            return self.formatClass(*out)
+            return self.format_class(*out)
 
-        out = self.parseFunction(line)  # (name, args)
+        out = self.parse_function(line)  # (name, args)
         if out:
-            return self.formatFunction(*out)
+            return self.format_function(*out)
 
-        out = self.parseVar(line)
+        out = self.parse_var(line)
         if out:
-            return self.formatVar(*out)
+            return self.format_var(*out)
 
         return None
 
-    def parseClass(self, line):
+    def parse_class(self, line):
         return None
 
-    def parseFunction(self, line):
+    def parse_function(self, line):
         return None
 
-    def parseVar(self, line):
+    def parse_var(self, line):
         return None
 
     def escape(self, str):
         return string.replace(str, '$', '\$')
 
-    def formatClass(self, name, base=None, interface=None):
+    def format_class(self, name, base=None, interface=None):
         out = []
 
-        classname = 'Class'
-        if 'classname' in self.settings:
-            classname = self.settings['classname']
+        class_name = self.class_name
 
-        out.append("%s: %s" % (classname, name))
+        out.append("%s: %s" % (class_name, name))
         out.append("${1:[%s description]}" % (self.escape(name)))
 
         if base:
@@ -67,7 +81,7 @@ class BaseParser(object):
 
         return out
 
-    def formatVar(self, name, val):
+    def format_var(self, name, val):
         out = []
 
         out.append("Variable: %s" % name)
@@ -76,17 +90,14 @@ class BaseParser(object):
 
         return out
 
-    def formatFunction(self, name, args, return_type=None):
+    def format_function(self, name, args, return_type=None):
         out = []
-
-        function_name = 'Function'
-        if 'function_name' in self.settings:
-            function_name = self.settings['function_name']
+        function_name = self.function_name
 
         out.append("%s: %s" % (function_name, name))
         out.append("${1:description}")
 
-        self.addExtraTags(out)
+        self.add_extra_tags(out)
 
         # if there are arguments, add a Parameter section for each
         if args:
@@ -95,21 +106,21 @@ class BaseParser(object):
             out.append("Parameters:")
             params = []
 
-            for arg in self.parseArgs(args):
+            for arg in self.parse_args(args):
                 description = '[type/description]'
                 if arg[0]:
                     description = arg[0]
 
                 params.append("  %s - ${1:%s}" % (self.escape(arg[1]), description))
 
-            out.extend(self.alignParameters(params))
+            out.extend(self.align_parameters(params))
 
             # add extra line after parameters?
             if self.preferences.get("natural_docs_spacer_between_sections"):
                 out.append("")
 
         if return_type is None:
-            return_type = self.getFunctionReturnType(name)
+            return_type = self.get_function_return_type(name)
 
         if return_type is not None and return_type is not self.NO_RETURN_TYPE:
             out.append("Returns:")
@@ -121,7 +132,7 @@ class BaseParser(object):
 
         return out
 
-    def alignParameters(self, params):
+    def align_parameters(self, params):
         columnWidth = 0
 
         # discover the first column width
@@ -139,30 +150,30 @@ class BaseParser(object):
 
         return newParams
 
-    def getFunctionReturnType(self, name):
+    def get_function_return_type(self, name):
         """ returns None for no return type. False meaning unknown, or a string """
         return self.UNKNOWN_RETURN_TYPE
 
-    def parseArgs(self, args):
+    def parse_args(self, args):
         """ an array of tuples, the first being the best guess at the type, the second being the name """
         out = []
         for arg in re.split('\s*,\s*', args):
             arg = arg.strip()
-            out.append((self.getArgType(arg), self.getArgName(arg)))
+            out.append((self.get_arg_type(arg), self.get_arg_name(arg)))
         return out
 
-    def getArgType(self, arg):
+    def get_arg_type(self, arg):
         return None
 
-    def getArgName(self, arg):
+    def get_arg_name(self, arg):
         return arg
 
-    def addExtraTags(self, out):
+    def add_extra_tags(self, out):
         extraTags = self.preferences.get('natural_docs_extra_tags', [])
         if (len(extraTags) > 0):
             out.extend(extraTags)
 
-    def guessTypeFromName(self, name):
+    def guess_type_from_name(self, name):
         name = re.sub("^[$_]", "", name)
         hungarian_map = self.preferences.get('natural_docs_notation_map', [])
         if len(hungarian_map):
