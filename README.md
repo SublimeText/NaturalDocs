@@ -500,7 +500,6 @@ If set to `false`, the normal comment tag will be used. Example:
 * Add shortcuts for inserting [NaturalDoc Group](http://www.naturaldocs.org/documenting/reference.html#Summaries) blocks
 * Add more languages (C/C++, Ruby)
 * Something special for PHP5.4 (maybe parse traits like a class?)
-* Snakecase all the Pasrers' function names
 * Make awesomer
 
 # Changelog
@@ -518,3 +517,8 @@ If set to `false`, the normal comment tag will be used. Example:
 * Fixed an indent bug with decorate command
 * Fixing bug in PHP parser. Class parser would not add `implements` to docblock
 * Fixing keymaps, `natural_docs_deep_indent`, and `NaturalDocsIndentCommand` to work
+
+## April 11, 2012
+
+* Snakecase all the Pasrers' function names
+* Added `__getattr__` to `BaseParser` for external classes to access language settings
