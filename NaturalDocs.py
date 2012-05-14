@@ -77,6 +77,12 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
         else:
             line = read_line(v, point)
 
+            if line is None:
+                # there is no line beneath the cursor (e.g. EOF)
+                v.run_command("insert", {"characters": "\n"})
+                v.run_command("move", {"by": "lines", "forward": False})
+                line = read_line(v, point)
+
             if parser.insert_after_def:
                 # move cursor below current line
                 v.run_command("move", {"by": "lines", "forward": True})
