@@ -6,7 +6,7 @@ Currently supported languages: Java, JavaScript, Perl, PHP, and Python.
 
 # Usage
 
-The easiest way to use this plugin is to put the cursor near what you want to document and press `Super-N`.
+The easiest way to use this plugin is to put the cursor near what you want to document and press `Super+N` (or `Super+N` + `Super+N` for OSX).
 
 ## Autocomplete Comments
 
@@ -105,7 +105,7 @@ Class:
 public class MyClass extends BaseClass implements ClassA, ClassB { ... }
 ```
 
-Put cursor on or before the line and pressing `Super-N` will result in:
+Put cursor on or before the line and pressing `Super+N` will result in:
 
 ```java
 /**
@@ -173,7 +173,7 @@ Code:
 function testThis($one, $two, $three) {}
 ```
 
-Put cursor on or before the line and pressing `Super-N` will result in:
+Put cursor on or before the line and pressing `Super+N` will result in:
 
 ```javascript
 /**
@@ -202,7 +202,7 @@ Package Code:
 package A::B::C;
 ```
 
-Put cursor on or before the line and pressing `Super-N` will result in:
+Put cursor on or before the line and pressing `Super+N` will result in:
 
 ```perl
 =begin ND
@@ -247,7 +247,7 @@ Class:
 class ClassD extends ClassA implements ClassB, ClassC { ... }
 ```
 
-Put cursor on or before the line and pressing `Super-N` will result in:
+Put cursor on or before the line and pressing `Super+N` will result in:
 
 ```php
 <?php
@@ -300,7 +300,7 @@ Class Code:
 class ClassB(ClassA):
 ```
 
-Put cursor on or /after/ the line and pressing `Super-N` will result in:
+Put cursor on or /after/ the line and pressing `Super+N` will result in:
 
 ```python
 class ClassB(ClassA):
@@ -504,12 +504,16 @@ If set to `false`, the normal comment tag will be used. Example:
 
 # Changelog
 
-## March 21, 2012
+## May 15, 2012
 
-* Add Decorations for Perl & Python
-* Added the ability to add Class/Package doc-blocks
-* Changed setting `natural_docs_extend_double_slash` to `natural_docs_continue_comments`
-* Added keymappings to continue number-sign comments if `natural_docs_continue_comments` is `True`
+* Fixed Issue #3 : inserting doc-blocks does not work when directly above EOF
+* Fix bug with inserting a Group block when parser uses
+* Changed default keymappings for OSX
+
+## April 11, 2012
+
+* Snakecase all the Pasrers' function names
+* Added `__getattr__` to `BaseParser` for external classes to access language settings
 
 ## April 9, 2012
 
@@ -518,7 +522,9 @@ If set to `false`, the normal comment tag will be used. Example:
 * Fixing bug in PHP parser. Class parser would not add `implements` to docblock
 * Fixing keymaps, `natural_docs_deep_indent`, and `NaturalDocsIndentCommand` to work
 
-## April 11, 2012
+## March 21, 2012
 
-* Snakecase all the Pasrers' function names
-* Added `__getattr__` to `BaseParser` for external classes to access language settings
+* Add Decorations for Perl & Python
+* Added the ability to add Class/Package doc-blocks
+* Changed setting `natural_docs_extend_double_slash` to `natural_docs_continue_comments`
+* Added keymappings to continue number-sign comments if `natural_docs_continue_comments` is `True`

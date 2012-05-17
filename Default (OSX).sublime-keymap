@@ -1,0 +1,5 @@
+[
+    { "keys": ["super+n", "super+n"], "command": "natural_docs_insert_block" },
+    { "keys": ["super+n", "super+d"], "command": "natural_docs_decorate" },
+    { "keys": ["super+n", "super+g"], "command": "natural_docs_group" }
+]
