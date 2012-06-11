@@ -6,6 +6,7 @@ site: https://github.com/SublimeText/NaturalDocs
 Based on DocBlockr by Nick Fisher (https://github.com/spadgos/sublime-jsdocs)
 """
 import sublime_plugin
+import sublime
 import re
 import os
 import sys
@@ -60,7 +61,7 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
     def run(self, edit, definition='', inline=False):
         v = self.view
 
-        settings = v.settings()
+        settings = sublime.load_settings('NaturalDocs.sublime-settings')
         point = v.sel()[0].end()
 
         parser = get_parser(v)
@@ -302,6 +303,10 @@ class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
         if parser.space_before_end:
             block += '\n'
 
+        whitespace = re.match('^\s*', block_middle).group(0)
+        if len(whitespace) > 0:
+            block_end = whitespace + block_end
+
         block += block_end
 
         for sel in v.sel():
@@ -309,14 +314,17 @@ class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
             for line_region in lines:
                 # step 1 - move anything on the line down
                 current_line = v.substr(line_region)
+                doc_block = block
+
                 if current_line.strip():
                     v.run_command("move_to", {"to": "bol", "extend": False})
                     v.run_command("insert", {"characters": "\n"})
                     v.run_command("move", {"by": "lines", "forward": False})
 
-                # keep whitespace
-                whitespace = re.match('^\s+', current_line).group(0)
-                doc_block = block.replace('\n', '\n' + whitespace)
+                if len(current_line) > 0:
+                    # keep whitespace
+                    whitespace = re.match('^\s+', current_line).group(0)
+                    doc_block = block.replace('\n', '\n' + whitespace)
 
                 # step 2 - insert group block
                 v.insert(edit, line_region.end(), doc_block)
