@@ -497,16 +497,20 @@ If set to `false`, the normal comment tag will be used. Example:
 
 # Todo
 
-* Add shortcuts for inserting [NaturalDoc Group](http://www.naturaldocs.org/documenting/reference.html#Summaries) blocks
 * Add more languages (C/C++, Ruby)
 * Something special for PHP5.4 (maybe parse traits like a class?)
 * Make awesomer
 
 # Changelog
 
+## June 29, 2012
+
+* Resolved Issue #6: inserting doc-blocks does not work when directly above EOF
+* Fixed bug with new preferences file not getting used correctly all the time (especially for non-Javascript like languages)
+
 ## June 11, 2012
 
-* Resolved Issue #5 -- Move settings file to `NaturalDocs.sublime-settings` / `User/NaturalDocs.sublime-settings`
+* Resolved Issue #5: Move settings file to `NaturalDocs.sublime-settings` / `User/NaturalDocs.sublime-settings`
 
 ## May 15, 2012
 
