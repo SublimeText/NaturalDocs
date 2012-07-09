@@ -56,6 +56,35 @@ def get_parser(view):
     return module.Parser(preferences)
 
 
+class NaturalDocsListener(sublime_plugin.EventListener):
+    """
+    Class: NaturalDocsListener
+
+    This is used to return NaturalDocs settings to keymaps
+
+    Extends: sublime_plugin.EventListener
+    """
+
+    def on_query_context(self, view, key, operator, operand, match_all):
+        if key == "natural_docs_continue_comments":
+            settings = sublime.load_settings('NaturalDocs.sublime-settings')
+            if operator == sublime.OP_EQUAL:
+                return operand == settings.get('natural_docs_continue_comments')
+
+            if operator == sublime.OP_NOT_EQUAL:
+                return operand != settings.get('natural_docs_continue_comments')
+
+        elif key == "natural_docs_deep_indent":
+            settings = sublime.load_settings('NaturalDocs.sublime-settings')
+            if operator == sublime.OP_EQUAL:
+                return operand == settings.get('natural_docs_deep_indent')
+
+            if operator == sublime.OP_NOT_EQUAL:
+                return operand != settings.get('natural_docs_deep_indent')
+
+        return None
+
+
 class NaturalDocsCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, definition='', inline=False):
@@ -101,7 +130,16 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
             write(v, first)
             first = prefix
 
-        if not definition:
+        # Find the line that we need to insert documentation for
+        if not definition and parser.insert_after_def:
+            # read the line before we inserted the doc block
+            point = v.sel()[0].end()
+            line_region = v.line(point)
+            line_region = v.line(line_region.begin() - 1)
+            line_region = v.line(line_region.begin() - 1)
+            line = read_line(v, line_region.begin())
+
+        elif not definition:
             # read the line after we inserted the doc block
             point = v.sel()[0].end()
             line = read_line(v, point + 1)
@@ -162,7 +200,7 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
                 write(v, "$0" + end)
 
 
-class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
+class NaturalDocsInsertBlockCommand(sublime_plugin.TextCommand):
     """
     This tries to start a Doc Block where one does not already exist
     """
@@ -176,6 +214,8 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
         point = v.sel()[0].begin()
         line_point = v.full_line(point)
         current_line = v.substr(line_point)
+        next_point = v.full_line(line_point.end())
+        next_line = v.substr(next_point)
 
         if len(current_line.strip()) > 0:
             # cursor is on the function definition
@@ -183,9 +223,15 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
                 # position the cursor inside the function
                 v.run_command("move", {"by": "lines", "forward": True})
                 v.run_command("move_to", {"to": "bol", "extend": False})
-                v.run_command("insert", {"characters": "\n"})
-                v.run_command("move", {"by": "lines", "forward": False})
-                # should we verify tabs are correct???
+
+                if len(next_line.strip()) > 0:
+                    # move next line down
+                    v.run_command("insert", {"characters": "\n"})
+                    v.run_command("move", {"by": "lines", "forward": False})
+                else:
+                    # insert whitespace
+                    v.run_command("reindent")
+
             else:
                 # move the function down to begin our block
                 v.run_command("move_to", {"to": "bol", "extend": False})
@@ -197,6 +243,11 @@ class NaturalDocsInsertBlock(sublime_plugin.TextCommand):
             point = v.sel()[0].end() - (col + 1)
             line_point = v.full_line(point)
             current_line = v.substr(line_point)
+
+            # alignment
+            v.run_command("reindent")
+
+
         else:
             point = v.sel()[0].end() + 1
             line_point = v.full_line(point)
@@ -226,6 +277,37 @@ class NaturalDocsIndentCommand(sublime_plugin.TextCommand):
         # default to inserting an indent
         # TODO: make default docblock indent a preference? per source type?
         v.insert(edit, current_position, "  ")
+
+
+class NaturalDocsDeepIndentCommand(sublime_plugin.TextCommand):
+
+    def run(self, edit):
+        v = self.view
+        parser = get_parser(v)
+
+        re_block_middle = re.escape(parser.block_middle.strip())
+
+        current_position = v.sel()[0].begin()
+        current_line = v.substr(v.line(current_position))
+        matches = re.match('(?P<whitespace>\s+)' + re_block_middle + '(?P<else>.+) - ', current_line)
+
+        insert = "\n" + parser.block_middle
+        if matches is not None:
+            # Align next line based on hyphen
+
+            length = len(matches.group('else'))
+            length += 3
+            insert = "\n" + matches.group('whitespace') + parser.block_middle.strip() + (' ' * length)
+
+        else:
+            # Align net line based on beginning of last line
+            matches = re.match('(?P<whitespace>\s+)' + re_block_middle + '(?P<else>\s*)', current_line)
+
+            if matches is not None:
+                length = len(matches.group('else'))
+                insert = "\n" + matches.group('whitespace') + parser.block_middle.strip() + (' ' * length)
+
+        v.insert(edit, current_position, insert)
 
 
 class NaturalDocsJoinCommand(sublime_plugin.TextCommand):

@@ -355,7 +355,9 @@ def test_test(one, two=12, three='something'):
 
 ## natural_docs_deep_indent
 
-If this is set to `True` then pressing `Tab` inside a documentation block, will try to add enough spaces to align the cursor below the description section of the previous line (which only the Parameters section has), otherwise it will just insert two spaces.
+This setting controls whether to align lines inside documentation blocks based on the previous line.
+
+When using `Enter` inside a documentation block, NaturalDocs will try to align the start of the next line either (1) after the parameter dash (space-hyphen-space) or (2) at the first actual start of last line. See examples.
 
 Example:
 
@@ -364,12 +366,64 @@ Example:
    * ...
    * Parameters:
    *
-   *   one   - this parameter does something
-   *   |
+   *   one     - this parameter does something |
+   *   twoLong - string
    */
 ```
 
-If the cursor is below a line that contains ' - ', then pressing `Tab` will insert enough spaces to align the cursor under the description of the prvious line. Result:
+If the current line that contains ' - ', then pressing `Enter` will insert enough spaces to align the cursor under the description of the previous line. Result:
+
+```javascript
+  /**
+   * ...
+   * Parameters:
+   *
+   *   one     - this parameter does something
+   *             |
+   *   twoLong - string
+   */
+```
+
+Similarly, if the current line does not contain ' - ', then pressing `Enter` will insert enough spaces to start the line under the first non-Whitespace character inside the documentation. Starting at:
+
+```javascript
+  /**
+   * ...
+   * Parameters:
+   *
+   *   one     - this parameter does something
+   *             this is another line |
+   *   twoLong - string
+   */
+```
+
+Results in:
+
+```javascript
+  /**
+   * ...
+   * Parameters:
+   *
+   *   one     - this parameter does something
+   *             this is another line
+   *             |
+   *   twoLong - string
+   */
+```
+
+If this setting is enabled, and there are no snippet fields available in the documentation block, you can also use `Tab` to insert as many spaces as necessary to put the cursor below the description of the previous line.
+
+```javascript
+  /**
+   * ...
+   * Parameters:
+   *
+   *   one   - this parameter does something
+   * |
+   */
+```
+
+Pressing `Tab` results in:
 
 ```javascript
   /**
@@ -380,7 +434,6 @@ If the cursor is below a line that contains ' - ', then pressing `Tab` will inse
    *           |
    */
 ```
-
 
 ## natural_docs_continue_comments
 
@@ -503,18 +556,24 @@ If set to `false`, the normal comment tag will be used. Example:
 
 # Changelog
 
+## July 9, 2012
+
+* Fixed bug with documenting the wrong line if language likes commends below the thing to be documented (e.g. Python)
+* Added a custom EventListener to check NaturalDocs settings from keymap contexts
+* Resolved [Issue #4](https://github.com/SublimeText/NaturalDocs/issues/4): `Tab` was overriding `next_field` actions.
+
 ## June 29, 2012
 
-* Resolved Issue #6: inserting doc-blocks does not work when directly above EOF
+* Resolved [Issue #6](https://github.com/SublimeText/NaturalDocs/issues/6): inserting doc-blocks does not work when directly above EOF
 * Fixed bug with new preferences file not getting used correctly all the time (especially for non-Javascript like languages)
 
 ## June 11, 2012
 
-* Resolved Issue #5: Move settings file to `NaturalDocs.sublime-settings` / `User/NaturalDocs.sublime-settings`
+* Resolved [Issue #5](https://github.com/SublimeText/NaturalDocs/issues/5): Move settings file to `NaturalDocs.sublime-settings` / `User/NaturalDocs.sublime-settings`
 
 ## May 15, 2012
 
-* Fixed Issue #3 : inserting doc-blocks does not work when directly above EOF
+* Fixed [Issue #3](https://github.com/SublimeText/NaturalDocs/issues/3): inserting doc-blocks does not work when directly above EOF
 * Fix bug with inserting a Group block when parser uses
 * Changed default keymappings for OSX
 
