@@ -2,7 +2,7 @@ NaturalDocs is a [Sublime Text 2](http://www.sublimetext.com/) package which mak
 
 # Languages
 
-Currently supported languages: Java, JavaScript, Perl, PHP, and Python.
+Currently supported languages: CoffeeScript, Java, JavaScript, Perl, PHP, and Python.
 
 # Usage
 
@@ -96,6 +96,125 @@ Results in:
 ```
 
 ## Language Specific Examples
+
+### CoffeeScript Examples
+
+#### Class Examples
+
+Example:
+
+```coffeescript
+class Animal
+```
+
+Result:
+
+```coffeescript
+#
+# Class: Animal
+#
+# [Animal description]
+#
+class Animal
+```
+
+Example:
+
+```coffeescript
+class Snake extends Animal
+```
+
+Result:
+
+```coffeescript
+#
+# Class: Snake
+#
+# [Snake description]
+#
+# Extends: Animal
+#
+class Snake extends Animal
+```
+
+#### Function Examples
+
+Example:
+
+```coffeescript
+square = (x) -> x * x
+```
+
+Result:
+
+```coffeescript
+#
+# Function: square
+#
+# description
+#
+# Parameters:
+#
+#   x - [type/description]
+#
+# Returns:
+#
+#   return description
+#
+square = (x) -> x * x
+```
+
+Example:
+
+```coffeescript
+race = (winner, runners...) ->
+```
+
+Result:
+
+```coffeescript
+#
+# Function: race
+#
+# description
+#
+# Parameters:
+#
+#   winner  - [type/description]
+#   runners - Splat.
+#
+# Returns:
+#
+#   return description
+#
+race = (winner, runners...) ->
+```
+
+Example:
+
+```coffeescript
+fill = (container, liquid = "coffee") ->
+```
+
+Result:
+
+```coffeescript
+#
+# Function: fill
+#
+# description
+#
+# Parameters:
+#
+#   container - [type/description]
+#   liquid    - String. Defaults to "coffee"
+#
+# Returns:
+#
+#   return description
+#
+fill = (container, liquid = "coffee") ->
+```
 
 ### Java Example
 
@@ -555,6 +674,10 @@ If set to `false`, the normal comment tag will be used. Example:
 * Make awesomer
 
 # Changelog
+
+## December 7, 2012
+
+* Added a CoffeeScript parser
 
 ## July 9, 2012
 
