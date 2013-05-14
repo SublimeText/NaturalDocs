@@ -36,24 +36,52 @@ def counter():
 
 
 def get_parser(view):
+    """
+    Function: get_parser
+
+    Gets a Parser based on the source file open in the current view, depending on
+    NaturalDocs settings
+
+    Parameters:
+
+      view - The current Sublime Text view
+
+    Returns:
+
+      A parser if NaturalDocs is setup for this source -OR- None
+    """
     scope = view.scope_name(view.sel()[0].end())
-    preferences = sublime.load_settings('NaturalDocs.sublime-settings')
+    settings = sublime.load_settings('NaturalDocs.sublime-settings')
+    languages = settings.get('natural_docs_language_map')
 
     res = re.search('source\\.(?P<source>\w+)', scope)
-    if not res:
-        module = __import__('parsers.javascript', fromlist=['parsers'])
-        return module.Parser(preferences)
+
+    if not res and "_" in languages:
+        try:
+            module = __import__('parsers.{0}'.format(languages["_"]), fromlist=['parsers'])
+            return module.Parser(settings)
+        except:
+            return None
+    elif not res:
+        return None
 
     source = res.group('source')
-    if source == 'js':
-        source = 'javascript'
 
-    try:
-        module = __import__('parsers.%s' % source, fromlist=['parsers'])
-    except ImportError:
-        module = __import__('parsers.javascript', fromlist=['parsers'])
+    if source in languages:
+        try:
+            module = __import__('parsers.%s' % languages[source], fromlist=['parsers'])
+            return module.Parser(settings)
+        except:
+            return None
 
-    return module.Parser(preferences)
+    elif "_" in languages:
+        try:
+            module = __import__('parsers.%s' % languages["_"], fromlist=['parsers'])
+            return module.Parser(settings)
+        except:
+            return None
+
+    return None
 
 
 class NaturalDocsListener(sublime_plugin.EventListener):
@@ -82,6 +110,12 @@ class NaturalDocsListener(sublime_plugin.EventListener):
             if operator == sublime.OP_NOT_EQUAL:
                 return operand != settings.get('natural_docs_deep_indent')
 
+        elif key == "natural_docs_source_check":
+            parser = get_parser(view)
+            if parser:
+                return True
+            return False
+
         return None
 
 
@@ -94,6 +128,9 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
         point = v.sel()[0].end()
 
         parser = get_parser(v)
+        if not parser:
+            return
+
         parser.inline = inline
 
         indentSpaces = max(0, settings.get('natural_docs_indentation_spaces', 1))
@@ -209,6 +246,8 @@ class NaturalDocsInsertBlockCommand(sublime_plugin.TextCommand):
         v = self.view
 
         parser = get_parser(v)
+        if not parser:
+            return
 
         # are one on the line or above it?
         point = v.sel()[0].begin()
@@ -284,6 +323,8 @@ class NaturalDocsDeepIndentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         v = self.view
         parser = get_parser(v)
+        if not parser:
+            return
 
         re_block_middle = re.escape(parser.block_middle.strip())
 
@@ -369,6 +410,8 @@ class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
         v = self.view
 
         parser = get_parser(v)
+        if not parser:
+            return
 
         block_start = parser.block_start
         block_end = parser.block_end

@@ -667,6 +667,13 @@ If set to `false`, the normal comment tag will be used. Example:
 #
 ```
 
+## natural_docs_language_map
+
+This setting maps the current syntax source to a NaturalDocs parser. To determine the name of a source file press `Ctrl+Alt+Shift+P`, and the scope tree will appear in the status line. NaturalDocs parses that string to find "source.(\w+)" and uses the part in parentheses to put in the map.
+
+Additionally, there is a fallback placeholder in the map that is "_". This is a way to get NaturalDocs to default to a particular parser if either (1) the source language of the current file cannot be determined or (2) there is no other mapping for the source language. Example: if you like the way the Python NaturalDocs parser works and want to use that in all languages.
+
+
 # Todo
 
 * Add more languages (C/C++, Ruby)
@@ -674,6 +681,11 @@ If set to `false`, the normal comment tag will be used. Example:
 * Make awesomer
 
 # Changelog
+
+## May 14, 2013
+
+* Added a new setting that maps source languages to NaturalDocs parsers
+* NaturalDocs will only work on source files that are map in the new setting
 
 ## December 7, 2012
 

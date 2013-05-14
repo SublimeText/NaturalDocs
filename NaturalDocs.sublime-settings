@@ -23,6 +23,23 @@
   // (or similar) be in use
   "natural_docs_notation_map": [],
 
+  // A map to determine which NaturalDocs parser to use based on the source file
+  // (If you wonder how to determine press Ctrl+Alt+Shift+P and scope tree will
+  // appear in the status line. ND uses the "source.(\w+)" part to put into this
+  // map)
+  "natural_docs_language_map": {
+    "js" : "javascript",
+    "php" : "php",
+    "coffee" : "coffee",
+    "python" : "python",
+    "perl" : "perl",
+    "java" : "java",
+
+    // this is the default one to try:
+    // remove this line to prevent ND from running on other source files
+    "_" : "javascript"
+  },
+
   // Whether there should be blank lines added between the description line, and
   // between tags of different types. If true, the output might look like this:
   //
