@@ -196,7 +196,7 @@ class NaturalDocsCommand(sublime_plugin.TextCommand):
             tabIndex = counter()
 
             def swapTabs(m):
-                return "%s%d%s" % (m.group(1), tabIndex.next(), m.group(2))
+                return "%s%d%s" % (m.group(1), next(tabIndex), m.group(2))
 
             for index, outputLine in enumerate(out):
                 out[index] = re.sub("(\\$\\{)\\d+(:[^}]+\\})", swapTabs, outputLine)
@@ -378,7 +378,7 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
             punctuation_end = '//'
             re_whitespace = re.compile("^(\\s*)//")
         else:
-            print 'NaturalDocs: Cannot decorate this line.'
+            print('NaturalDocs: Cannot decorate this line.')
             return
 
         endLength = len(punctuation_end) + 1

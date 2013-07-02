@@ -6,7 +6,7 @@ Currently supported languages: CoffeeScript, Java, JavaScript, Perl, PHP, and Py
 
 # Usage
 
-The easiest way to use this plugin is to put the cursor near what you want to document and press `Super+N` (or `Super+N` + `Super+N` for OSX).
+The easiest way to use this plugin is to put the cursor near what you want to document and press `Super+N` (or `Super+Alt+N` for OSX).
 
 ## Autocomplete Comments
 
@@ -676,11 +676,16 @@ Additionally, there is a fallback placeholder in the map that is "_". This is a 
 
 # Todo
 
-* Add more languages (C/C++, Ruby)
+* Add more languages (C/C++, Ruby, Scala)
 * Something special for PHP5.4 (maybe parse traits like a class?)
 * Make awesomer
 
 # Changelog
+
+## July 2, 2013
+
+* Updated the plugin to work with Python3
+* Changed OSX shortcuts to actually work (now that I have a Macbook)
 
 ## May 14, 2013
 

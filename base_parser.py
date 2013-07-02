@@ -63,7 +63,7 @@ class BaseParser(object):
         return None
 
     def escape(self, str):
-        return string.replace(str, '$', '\$')
+        return str.replace('$', '\$')
 
     def format_class(self, name, base=None, interface=None):
         out = []
@@ -84,7 +84,7 @@ class BaseParser(object):
     def format_var(self, name, val):
         out = []
 
-        out.append("Variable: %s" % name)
+        out.append("Variable: %s" % (self.escape(name)))
         if self.inline == False:
             out.append("${1:[%s description]}" % (self.escape(name)))
 
