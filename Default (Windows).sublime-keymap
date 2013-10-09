@@ -1,7 +1,7 @@
 [
-    { "keys": ["super+alt+n"], "command": "natural_docs_insert_block" },
-    { "keys": ["super+alt+d"], "command": "natural_docs_decorate" },
-    { "keys": ["super+alt+g"], "command": "natural_docs_group" },
+    { "keys": ["super+n"], "command": "natural_docs_insert_block" },
+    { "keys": ["super+d"], "command": "natural_docs_decorate" },
+    { "keys": ["super+g"], "command": "natural_docs_group" },
 
     // insert the rest of the doc-block
     { "keys": ["enter"], "command": "natural_docs", "context" :
