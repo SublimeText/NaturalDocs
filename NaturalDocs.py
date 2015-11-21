@@ -10,6 +10,7 @@ import sublime
 import re
 import os
 import sys
+from math import floor
 
 path = os.path.abspath(os.path.dirname(__file__))
 if path not in sys.path:
@@ -368,15 +369,29 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
         punctuation = ''
         re_whitespace = ''
         punctuation_end = ''
+        punctuation_length = 0
 
         if v.scope_name(v.sel()[0].a).find('comment.line.number-sign') > 0:
             punctuation = '#'
             punctuation_end = '#'
+            punctuation_length = len(punctuation)
             re_whitespace = re.compile("^(\\s*)#")
         elif v.scope_name(v.sel()[0].a).find('comment.line.double-slash') > 0:
             punctuation = '/'
             punctuation_end = '//'
+            punctuation_length = len(punctuation)
             re_whitespace = re.compile("^(\\s*)//")
+        # '%%' have special meaning in MATLAB, so '%-' is used for padding instead
+        elif v.scope_name(v.sel()[0].a).find('comment.line.percentage.matlab') > 0:
+            punctuation = '%-'
+            punctuation_end = '%'
+            punctuation_length = len(punctuation)
+            re_whitespace = re.compile("^(\\s*)%")
+        elif v.scope_name(v.sel()[0].a).find('comment.line.percentage') > 0:
+            punctuation = '%'
+            punctuation_end = '%'
+            punctuation_length = len(punctuation)
+            re_whitespace = re.compile("^(\\s*)%")
         else:
             print('NaturalDocs: Cannot decorate this line.')
             return
@@ -393,15 +408,17 @@ class NaturalDocsDecorateCommand(sublime_plugin.TextCommand):
                 maxLength = max(maxLength, lineRegion.size())
 
             lineLength = maxLength - len(leadingWS)
-            v.insert(edit, sel.end(), leadingWS + punctuation * (lineLength + endLength) + "\n")
+            v.insert(edit, sel.end(), leadingWS + (punctuation * (int(floor(lineLength/len(punctuation))) + endLength)).strip('-') + "\n")
 
             for lineRegion in reversed(lines):
                 line = v.substr(lineRegion)
                 rPadding = 1 + (maxLength - lineRegion.size())
+                if punctuation_length == 2:
+                    rPadding += (lineRegion.size()+1)%2
                 v.replace(edit, lineRegion, leadingWS + line + (" " * rPadding) + punctuation_end)
                 # break
 
-            v.insert(edit, sel.begin(), punctuation * (lineLength + endLength) + "\n")
+            v.insert(edit, sel.begin(), (punctuation * (int(floor(lineLength/len(punctuation))) + endLength)).strip('-') + "\n")
 
 
 class NaturalDocsGroupCommand(sublime_plugin.TextCommand):
