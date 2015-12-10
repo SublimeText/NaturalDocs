@@ -2,7 +2,7 @@ NaturalDocs is a [Sublime Text 2](http://www.sublimetext.com/) package which mak
 
 # Languages
 
-Currently supported languages: CoffeeScript, Java, JavaScript, Perl, PHP, and Python.
+Currently supported languages: CoffeeScript, Java, JavaScript, Perl, PHP, Python and Matlab (only comment decoration).
 
 # Usage
 
